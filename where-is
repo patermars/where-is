@@ -30,7 +30,6 @@ show_directories() {
 # Directories to search for configuration files
 CONFIG_DIRS=(
   "/etc"
-  "/etc/opt/"
   "/etc/default/"
   "/usr/local/etc"
   "$HOME/.config"
