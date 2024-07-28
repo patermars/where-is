@@ -1,15 +1,31 @@
 #!/bin/bash
 
 # Name: where-is
-# Purpose: Locate configuration files for a given application
+# Purpose: Locate configuration files for given applications
+# Version: 1.0
 
-# Check if an argument is provided
-if [ -z "$1" ]; then
-  echo "Usage: where-is <application_name>"
-  exit 1
-fi
+# Function to display usage information
+show_help() {
+  echo "Usage: where-is [options] <application_name1> [<application_name2> ...]"
+  echo
+  echo "Options:"
+  echo "  -h, --help           Display this help message and exit"
+  echo "  -v, --version        Display the script version and exit"
+  echo "  -d, --directories    List the directories being searched and exit"
+}
 
-APP_NAME=$1
+# Function to display version information
+show_version() {
+  echo "where-is version 1.0"
+}
+
+# Function to display directories being searched
+show_directories() {
+  echo "Directories being searched:"
+  for DIR in "${CONFIG_DIRS[@]}"; do
+    echo "  $DIR"
+  done
+}
 
 # Directories to search for configuration files
 CONFIG_DIRS=(
@@ -22,10 +38,44 @@ CONFIG_DIRS=(
   "/opt"
 )
 
-echo "Searching for configuration files related to '$APP_NAME'..."
+# Check if at least one argument is provided
+if [ "$#" -eq 0 ]; then
+  show_help
+  exit 1
+fi
 
-for DIR in "${CONFIG_DIRS[@]}"; do
-  find "$DIR" -type f -iname "*$APP_NAME*" 2>/dev/null
+# Parse options
+while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
+  case $1 in
+    -h | --help )
+      show_help
+      exit 0
+      ;;
+    -v | --version )
+      show_version
+      exit 0
+      ;;
+    -d | --directories )
+      show_directories
+      exit 0
+      ;;
+  esac
+  shift
 done
 
-echo "Search complete."
+# Check if there are any remaining arguments (application names)
+if [ "$#" -eq 0 ]; then
+  show_help
+  exit 1
+fi
+
+# Loop through each application name provided as arguments
+for APP_NAME in "$@"; do
+  echo "Searching for configuration files related to '$APP_NAME'..."
+
+  for DIR in "${CONFIG_DIRS[@]}"; do
+    find "$DIR" -type f -iname "*$APP_NAME*" 2>/dev/null
+  done
+
+  echo "Search complete for '$APP_NAME'."
+done
