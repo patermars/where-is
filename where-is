@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Name: where-is
+# Purpose: Locate configuration files for a given application
+
+# Check if an argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: where-is <application_name>"
+  exit 1
+fi
+
+APP_NAME=$1
+
+# Directories to search for configuration files
+CONFIG_DIRS=(
+  "/etc"
+  "/etc/opt/"
+  "/etc/default/"
+  "/usr/local/etc"
+  "$HOME/.config"
+  "$HOME/.local/share"
+  "/opt"
+)
+
+echo "Searching for configuration files related to '$APP_NAME'..."
+
+for DIR in "${CONFIG_DIRS[@]}"; do
+  find "$DIR" -type f -iname "*$APP_NAME*" 2>/dev/null
+done
+
+echo "Search complete."
